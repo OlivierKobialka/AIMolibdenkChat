@@ -12,6 +12,9 @@ export default function LoginForm() {
 	const [showPassword, setShowPassword] = useState<boolean>(false);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [error, setError] = useState<string>("");
+	const splineSceneUrl =
+		"https://unpkg.com/@splinetool/viewer@1.12.74/build/spline-viewer.js" ||
+		"undefined";
 
 	const router = useRouter();
 	const formDisabled = loading || !email.trim() || !password;
@@ -231,11 +234,10 @@ export default function LoginForm() {
 							zIndex: 2,
 							background: "rgba(255,255,255,0.75)",
 						}}>
-						Wstawiono placeholder Spline (url=undefined) zgodnie z
-						Twoim wymaganiem.
+						Spline scene: {splineSceneUrl}
 					</div>
 					<div style={{ height: "100%" }}>
-						<spline-viewer url='undefined'></spline-viewer>
+						<spline-viewer url={splineSceneUrl}></spline-viewer>
 					</div>
 				</div>
 			</section>
