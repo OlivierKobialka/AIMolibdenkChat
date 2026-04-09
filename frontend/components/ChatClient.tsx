@@ -10,6 +10,8 @@ import {
 } from "react";
 import Script from "next/script";
 import { useRouter } from "next/navigation";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { chatRequest } from "../lib/api";
 import { clearSession, getSession } from "../lib/session";
 
@@ -69,14 +71,22 @@ function MessageBubble({ message }: MessageBubbleProps) {
 							: "#ffffff",
 					color: isUser ? "#ffffff" : isError ? "#b91c1c" : "#0f172a",
 				}}>
-				<p
-					style={{
-						margin: 0,
-						whiteSpace: "pre-wrap",
-						lineHeight: 1.45,
-					}}>
-					{message.content}
-				</p>
+				{message.role === "assistant" ? (
+					<div className='markdown-content'>
+						<Markdown remarkPlugins={[remarkGfm]}>
+							{message.content}
+						</Markdown>
+					</div>
+				) : (
+					<p
+						style={{
+							margin: 0,
+							whiteSpace: "pre-wrap",
+							lineHeight: 1.45,
+						}}>
+						{message.content}
+					</p>
+				)}
 				{message.sources?.length ? (
 					<div
 						style={{
