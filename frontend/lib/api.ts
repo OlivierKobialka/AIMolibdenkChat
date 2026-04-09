@@ -1,4 +1,22 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const ENV_API_BASE_URL = process.env.NEXT_PUBLIC_API_URL?.trim();
+
+function resolveApiBaseUrl(): string {
+	if (ENV_API_BASE_URL) {
+		return ENV_API_BASE_URL.replace(/\/+$/, "");
+	}
+
+	if (typeof window !== "undefined") {
+		const host = window.location.hostname;
+		if (host === "localhost" || host === "127.0.0.1") {
+			return "http://localhost:5000";
+		}
+	}
+
+	// Vercel experimentalServices backend route prefix (same-origin).
+	return "/_/backend";
+}
+
+const API_BASE_URL = resolveApiBaseUrl();
 
 export interface LoginRequest {
 	email: string;
