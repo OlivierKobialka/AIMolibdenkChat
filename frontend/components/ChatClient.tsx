@@ -326,16 +326,16 @@ export default function ChatClient() {
 			</header>
 
 			{!hasMessages ? (
-				<div 
-					className="empty-state-grid"
-					style={{ 
-						display: "grid", 
-						gridTemplateColumns: "1.2fr 1fr", 
-						flex: 1, 
-						maxWidth: "1150px", 
-						margin: "0 auto", 
-						width: "100%", 
-						alignItems: "center" 
+				<div
+					className='empty-state-grid'
+					style={{
+						display: "grid",
+						gridTemplateColumns: "1.2fr 1fr",
+						flex: 1,
+						maxWidth: "1150px",
+						margin: "0 auto",
+						width: "100%",
+						alignItems: "center",
 					}}>
 					<section
 						style={{
@@ -353,87 +353,95 @@ export default function ChatClient() {
 								flexDirection: "column",
 								gap: "20px",
 							}}>
-						<div style={{ textAlign: "center" }}>
-							<h2
-								style={{
-									marginTop: 0,
-									marginBottom: "8px",
-									fontSize: "24px",
-									fontWeight: 600,
-								}}>
-								Witaj w Moly AI
-							</h2>
-							<p
-								style={{
-									marginTop: 0,
-									marginBottom: 0,
-									color: "var(--muted)",
-									fontSize: "14px",
-								}}>
-								Zadawaj pytania o oferte, strategię i model
-								biznesowy Moly.
-							</p>
-						</div>
-
-						<form
-							onSubmit={(event: FormEvent<HTMLFormElement>) => {
-								event.preventDefault();
-								void sendMessage();
-							}}
-							style={{
-								display: "flex",
-								gap: "10px",
-								alignItems: "end",
-							}}>
-							<textarea
-								ref={inputRef}
-								className='input'
-								value={text}
-								onChange={event => setText(event.target.value)}
-								onKeyDown={onKeyDown}
-								placeholder='Zadaj pytanie o Moly...'
-								rows={2}
-								style={{
-									resize: "none",
-									minHeight: "50px",
-									maxHeight: "150px",
-									flex: 1,
-								}}
-							/>
-							<button
-								className='button-primary'
-								type='submit'
-								disabled={!canSend}
-								style={{ minHeight: "50px" }}>
-								{loading ? "Wysyłanie..." : "Wyślij"}
-							</button>
-						</form>
-
-						<div
-							style={{
-								display: "grid",
-								gap: "8px",
-								gridTemplateColumns: "1fr 1fr",
-							}}>
-							{SUGGESTED_QUESTIONS.map(question => (
-								<button
-									type='button'
-									key={question}
-									className='button-outline'
-									onClick={() => applySuggestion(question)}
+							<div style={{ textAlign: "center" }}>
+								<h2
 									style={{
-										textAlign: "left",
-										minHeight: "48px",
-										fontSize: "13px",
+										marginTop: 0,
+										marginBottom: "8px",
+										fontSize: "24px",
+										fontWeight: 600,
 									}}>
-									{question}
+									Witaj w Moly AI
+								</h2>
+								<p
+									style={{
+										marginTop: 0,
+										marginBottom: 0,
+										color: "var(--muted)",
+										fontSize: "14px",
+									}}>
+									Zadawaj pytania o oferte, strategię i model
+									biznesowy Moly.
+								</p>
+							</div>
+
+							<form
+								onSubmit={(
+									event: FormEvent<HTMLFormElement>,
+								) => {
+									event.preventDefault();
+									void sendMessage();
+								}}
+								style={{
+									display: "flex",
+									gap: "10px",
+									alignItems: "end",
+								}}>
+								<textarea
+									ref={inputRef}
+									className='input'
+									value={text}
+									onChange={event =>
+										setText(event.target.value)
+									}
+									onKeyDown={onKeyDown}
+									placeholder='Zadaj pytanie o Moly...'
+									rows={2}
+									style={{
+										resize: "none",
+										minHeight: "50px",
+										maxHeight: "150px",
+										flex: 1,
+									}}
+								/>
+								<button
+									className='button-primary'
+									type='submit'
+									disabled={!canSend}
+									style={{ minHeight: "50px" }}>
+									{loading ? "Wysyłanie..." : "Wyślij"}
 								</button>
-							))}
+							</form>
+
+							<div
+								style={{
+									display: "grid",
+									gap: "8px",
+									gridTemplateColumns: "1fr 1fr",
+								}}>
+								{SUGGESTED_QUESTIONS.map(question => (
+									<button
+										type='button'
+										key={question}
+										className='button-outline'
+										onClick={() =>
+											applySuggestion(question)
+										}
+										style={{
+											textAlign: "left",
+											minHeight: "48px",
+											fontSize: "13px",
+										}}>
+										{question}
+									</button>
+								))}
+							</div>
 						</div>
-					</div>
 					</section>
-					<div className="spline-container" style={{ height: "550px", position: "relative" }}>
-						<spline-viewer url="https://prod.spline.design/PEeua81IXcs20GAN/scene.splinecode"></spline-viewer>
+					<div
+						className='spline-container'
+						style={{ height: "550px", position: "relative" }}>
+						<spline-viewer url='https://prod.spline.design/PEeua81IXcs20GAN/scene.splinecode'></spline-viewer>
 					</div>
 				</div>
 			) : (
