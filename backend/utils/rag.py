@@ -18,7 +18,9 @@ from utils.prompts import SYSTEM_PROMPT, RAG_PROMPT_TEMPLATE
 
 logger = logging.getLogger(__name__)
 
-DOCUMENTS_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "documents")
+DOCUMENTS_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)), "data", "documents"
+)
 _index_lock = Lock()
 _is_initialized = False
 
@@ -153,7 +155,9 @@ def _generate_answer(question: str, context_chunks):
     google_api_key = os.getenv("GOOGLE_API_KEY", "")
     if not google_api_key:
         logger.warning("GOOGLE_API_KEY is not set")
-        return "Brak konfiguracji AI (GOOGLE_API_KEY). Skontaktuj się z administratorem."
+        return (
+            "Brak konfiguracji AI (GOOGLE_API_KEY). Skontaktuj się z administratorem."
+        )
 
     model_name = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
     prompt = _build_prompt(question, context_chunks)
