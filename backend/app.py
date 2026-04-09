@@ -9,7 +9,6 @@ Endpoints:
 """
 
 import os
-import sqlite3
 import logging
 from datetime import datetime
 
@@ -40,98 +39,26 @@ CORS(
 # --- Config ---
 PASSWORD = os.getenv("APP_PASSWORD", "molibdenek2027!")
 ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "moly-admin-secret-2027")
-DB_PATH = os.path.join(os.path.dirname(__file__), "data", "moly_chat.db")
 
 
-# --- Database ---
-def get_db():
-    """Get SQLite database connection."""
-    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
-
-
+# --- Persistence (disabled on serverless runtime) ---
 def init_db():
-    """Initialize database tables."""
-    conn = get_db()
-    cursor = conn.cursor()
-
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS leads (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT NOT NULL,
-            first_login_at TEXT NOT NULL,
-            last_login_at TEXT NOT NULL,
-            login_count INTEGER DEFAULT 1
-        )
-    """
-    )
-
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS conversations (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            session_id TEXT NOT NULL,
-            user_message TEXT NOT NULL,
-            ai_response TEXT NOT NULL,
-            sources TEXT,
-            created_at TEXT NOT NULL
-        )
-    """
-    )
-
-    conn.commit()
-    conn.close()
-    logger.info("Database initialized")
+    """Initialize persistence layer (disabled in this deployment mode)."""
+    logger.info("Persistence disabled: running without local database writes")
 
 
 def save_lead(email: str):
-    """Save or update lead in database."""
-    conn = get_db()
-    cursor = conn.cursor()
-    now = datetime.now().isoformat()
-
-    cursor.execute("SELECT id, login_count FROM leads WHERE email = ?", (email,))
-    existing = cursor.fetchone()
-
-    is_new = False
-    if existing:
-        cursor.execute(
-            "UPDATE leads SET last_login_at = ?, login_count = login_count + 1 WHERE email = ?",
-            (now, email),
-        )
-    else:
-        cursor.execute(
-            "INSERT INTO leads (email, first_login_at, last_login_at, login_count) VALUES (?, ?, ?, 1)",
-            (email, now, now),
-        )
-        is_new = True
-
-    conn.commit()
-    conn.close()
-    return is_new
+    """Accept lead data but do not persist it."""
+    logger.info(f"[NO-PERSIST] Lead accepted: {email}")
+    return False
 
 
 def save_conversation(
     session_id: str, user_message: str, ai_response: str, sources: list
 ):
-    """Save conversation to database."""
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO conversations (session_id, user_message, ai_response, sources, created_at) VALUES (?, ?, ?, ?, ?)",
-        (
-            session_id,
-            user_message,
-            ai_response,
-            ",".join(sources),
-            datetime.now().isoformat(),
-        ),
-    )
-    conn.commit()
-    conn.close()
+    """Accept conversation data but do not persist it."""
+    _ = (session_id, user_message, ai_response, sources)
+    logger.info("[NO-PERSIST] Conversation accepted")
 
 
 # ==============================
@@ -245,25 +172,13 @@ def admin_leads():
     if token != ADMIN_TOKEN:
         return jsonify({"error": "Unauthorized"}), 403
 
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM leads ORDER BY last_login_at DESC")
-    rows = cursor.fetchall()
-    conn.close()
-
-    leads = []
-    for row in rows:
-        leads.append(
-            {
-                "id": row["id"],
-                "email": row["email"],
-                "first_login_at": row["first_login_at"],
-                "last_login_at": row["last_login_at"],
-                "login_count": row["login_count"],
-            }
-        )
-
-    return jsonify({"leads": leads, "total": len(leads)})
+    return jsonify(
+        {
+            "leads": [],
+            "total": 0,
+            "message": "Persistence is disabled in this deployment mode.",
+        }
+    )
 
 
 @app.route("/api/admin/conversations", methods=["GET"])
@@ -277,26 +192,13 @@ def admin_conversations():
     if token != ADMIN_TOKEN:
         return jsonify({"error": "Unauthorized"}), 403
 
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM conversations ORDER BY created_at DESC LIMIT 100")
-    rows = cursor.fetchall()
-    conn.close()
-
-    conversations = []
-    for row in rows:
-        conversations.append(
-            {
-                "id": row["id"],
-                "session_id": row["session_id"],
-                "user_message": row["user_message"],
-                "ai_response": row["ai_response"],
-                "sources": row["sources"],
-                "created_at": row["created_at"],
-            }
-        )
-
-    return jsonify({"conversations": conversations, "total": len(conversations)})
+    return jsonify(
+        {
+            "conversations": [],
+            "total": 0,
+            "message": "Persistence is disabled in this deployment mode.",
+        }
+    )
 
 
 # ==============================
